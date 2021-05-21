@@ -46,4 +46,4 @@ for holding in portfolio:
         stock_gain_loss[holding['name']] = current_value - original_value
     
 print(f'Portfolio value: {current_portfolio_value}')
-print(stock_gain_loss)
+print('Difference with the original investment:',sum(stock_gain_loss.values()))
