@@ -10,10 +10,11 @@ def read_portfolio(filename) -> list:
         rows = csv.reader(file)
         headers = next(rows)
         for row in rows:
+            record = dict(zip(headers, row))
             holding = {}
-            holding['name'] = row[0]
-            holding['shares'] = int(row[1])
-            holding['price'] = float(row[2])
+            holding['name'] = record['name']
+            holding['shares'] = int(record['shares'])
+            holding['price'] = float(record['price'])
             portfolio.append(holding)
     
     return portfolio
@@ -31,8 +32,18 @@ def read_prices(filename) -> dict:
             
     return prices
 
-portfolio = read_portfolio('Work\Data\portfolio.csv')
-prices = read_prices('Work\Data\prices.csv')
+def make_report(portfolio, prices) -> list:
+    stock_price_change = []
+    
+    for item in portfolio:
+        price_change = prices[item['name']] - item['price']
+        stock_price_change.append((item['name'], item['shares'], prices[item['name']] ,price_change))
+        
+    return stock_price_change
+
+portfolio = read_portfolio('Data\portfoliodate.csv')
+prices = read_prices('Data\prices.csv')
+
 current_portfolio_value = 0
 stock_gain_loss = {}
 
@@ -44,6 +55,15 @@ for holding in portfolio:
         stock_gain_loss[holding['name']] = stock_gain_loss[holding['name']] + (current_value - original_value)
     else:
         stock_gain_loss[holding['name']] = current_value - original_value
-    
-print(f'Portfolio value: {current_portfolio_value}')
-print('Difference with the original investment:',sum(stock_gain_loss.values()))
+
+# print(f'Portfolio value: {current_portfolio_value}')
+# print('Difference with the original investment:',sum(stock_gain_loss.values()))
+
+report = make_report(portfolio, prices)
+headers = ('Names', 'Shares', 'Price', 'Change')
+sign = '$'
+ 
+print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
+print(('-' * 10 + ' ') * len(headers))
+for name, shares, price, change in report:
+    print(f'{name:>10s} {shares:>10d} {f"${price:0.2f}":>10s} {change:>10.2f}')

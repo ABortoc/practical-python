@@ -5,32 +5,26 @@ import csv
 import sys
 
 def portfolio_cost(filename):
-    sum = 0
-    
-    # with open(filename, 'rt') as file:
-    #     for line in file:
-    #         row = line.split(',')
-    #         if row[1].isalpha() is False and row[2][:-1].isalpha() is False:
-    #             try:
-    #                 sum += int(row[1]) * float(row[2][:-1])
-    #             except ValueError:
-    #                 print('Invalid input')
+    total_cost = 0
     
     with open(filename, 'rt') as file:
         rows = csv.reader(file)
         headers = next(rows)
-        for row in rows:
+        for row_num, row in enumerate(rows, start=1):
+            record = dict(zip(headers, row))
             try:
-                sum += int(row[1]) * float(row[2])
+                num_shares = int(record['shares'])
+                price = float(record['price'])
+                total_cost += num_shares * price
             except ValueError:
-                print('Invalid value')
+                print(f'Row {row_num}: Bad row: {row}')
     
-    return sum
+    return total_cost
 
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = 'Work/Data/portfolio.csv'
+    filename = 'Data/portfolio.csv'
 
 cost = portfolio_cost(filename)
 print('Total cost:', cost)
