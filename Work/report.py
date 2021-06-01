@@ -41,29 +41,17 @@ def make_report(portfolio, prices) -> list:
         
     return stock_price_change
 
-portfolio = read_portfolio('Data\portfoliodate.csv')
-prices = read_prices('Data\prices.csv')
-
-current_portfolio_value = 0
-stock_gain_loss = {}
-
-for holding in portfolio:
-    current_portfolio_value += holding['shares'] * prices[holding['name']]
-    current_value = holding['shares'] * prices[holding['name']]
-    original_value = holding['shares'] * holding['price']
-    if holding['name'] in stock_gain_loss:
-        stock_gain_loss[holding['name']] = stock_gain_loss[holding['name']] + (current_value - original_value)
-    else:
-        stock_gain_loss[holding['name']] = current_value - original_value
-
-# print(f'Portfolio value: {current_portfolio_value}')
-# print('Difference with the original investment:',sum(stock_gain_loss.values()))
-
-report = make_report(portfolio, prices)
-headers = ('Names', 'Shares', 'Price', 'Change')
-sign = '$'
- 
-print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
-print(('-' * 10 + ' ') * len(headers))
-for name, shares, price, change in report:
-    print(f'{name:>10s} {shares:>10d} {f"${price:0.2f}":>10s} {change:>10.2f}')
+def print_report(report):
+    headers = ('Names', 'Shares', 'Price', 'Change')
+    print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
+    print(('-' * 10 + ' ') * len(headers))
+    for name, shares, price, change in report:
+        print(f'{name:>10s} {shares:>10d} {f"${price:0.2f}":>10s} {change:>10.2f}')
+        
+def portfolio_report(portfolio_filename, prices_filename):
+    portfolio = read_portfolio(portfolio_filename)
+    prices = read_prices(prices_filename)
+    report = make_report(portfolio, prices)
+    print_report(report)
+    
+portfolio_report('Data\portfolio.csv', 'Data\prices.csv')
