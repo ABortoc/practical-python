@@ -1,36 +1,15 @@
 # report.py
 #
 # Exercise 2.4
-import csv
+from fileparse import parse_csv
 
 def read_portfolio(filename) -> list:
-    portfolio = []
-    
-    with open(filename, 'rt') as file:
-        rows = csv.reader(file)
-        headers = next(rows)
-        for row in rows:
-            record = dict(zip(headers, row))
-            holding = {}
-            holding['name'] = record['name']
-            holding['shares'] = int(record['shares'])
-            holding['price'] = float(record['price'])
-            portfolio.append(holding)
-    
-    return portfolio
+    with open(filename) as lines:
+        return parse_csv(lines, col_select=['name','shares','price'], types=[str,int,float], silence_errors=False)
 
 def read_prices(filename) -> dict:
-    prices = {}
-    
-    with open(filename, 'rt') as file:
-        rows = csv.reader(file)
-        for row in rows:
-            if row != []:
-                prices[row[0]] = float(row[1])
-            else:
-                continue
-            
-    return prices
+    with open(filename) as lines:
+        return dict(parse_csv(lines, types=[str,float], has_headers=False))
 
 def make_report(portfolio, prices) -> list:
     stock_price_change = []
@@ -54,4 +33,11 @@ def portfolio_report(portfolio_filename, prices_filename):
     report = make_report(portfolio, prices)
     print_report(report)
     
-portfolio_report('Data\portfolio.csv', 'Data\prices.csv')
+def main(argv):
+    if len(argv) != 3:
+        raise SystemExit(f'Usage: {argv[0]} portfile pricefile')
+    portfolio_report(argv[1], argv[2])
+
+if __name__ == '__main__':    
+    import sys
+    main(sys.argv)
