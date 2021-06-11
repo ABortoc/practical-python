@@ -2,10 +2,14 @@
 #
 # Exercise 2.4
 from fileparse import parse_csv
+import stock
 
 def read_portfolio(filename) -> list:
     with open(filename) as lines:
-        return parse_csv(lines, col_select=['name','shares','price'], types=[str,int,float], silence_errors=False)
+        portfolio_dicts = parse_csv(lines, col_select=['name','shares','price'], types=[str,int,float], silence_errors=False)
+    
+    portfolio = [stock.Stock(item['name'], item['shares'], item['price']) for item in portfolio_dicts]
+    return portfolio
 
 def read_prices(filename) -> dict:
     with open(filename) as lines:
@@ -15,8 +19,8 @@ def make_report(portfolio, prices) -> list:
     stock_price_change = []
     
     for item in portfolio:
-        price_change = prices[item['name']] - item['price']
-        stock_price_change.append((item['name'], item['shares'], prices[item['name']] ,price_change))
+        price_change = prices[item.name] - item.price
+        stock_price_change.append((item.name, item.shares, prices[item.name] ,price_change))
         
     return stock_price_change
 

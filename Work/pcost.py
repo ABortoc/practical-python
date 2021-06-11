@@ -8,7 +8,7 @@ def portfolio_cost(filename) -> float:
     portfolio = read_portfolio(filename)
     
     for record in portfolio:
-        total_cost += record['shares'] * record['price']
+        total_cost += record.shares * record.price
     
     return total_cost
 
