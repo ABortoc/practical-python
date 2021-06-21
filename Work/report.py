@@ -3,6 +3,7 @@
 # Exercise 2.4
 from fileparse import parse_csv
 import stock
+import tableformat
 
 def read_portfolio(filename) -> list:
     with open(filename) as lines:
@@ -24,23 +25,29 @@ def make_report(portfolio, prices) -> list:
         
     return stock_price_change
 
-def print_report(report):
-    headers = ('Names', 'Shares', 'Price', 'Change')
-    print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
-    print(('-' * 10 + ' ') * len(headers))
+def print_report(report, formatter):
+    formatter.headings(['Name','Shares','Price','Change'])
+
     for name, shares, price, change in report:
-        print(f'{name:>10s} {shares:>10d} {f"${price:0.2f}":>10s} {change:>10.2f}')
+        rowdata = [name, str(shares), f'{price:0.2f}', f'{change:0.2f}']
+        formatter.row(rowdata)
         
-def portfolio_report(portfolio_filename, prices_filename):
+def portfolio_report(portfolio_filename, prices_filename, fmt='txt'):
     portfolio = read_portfolio(portfolio_filename)
     prices = read_prices(prices_filename)
+    
     report = make_report(portfolio, prices)
-    print_report(report)
+    
+    formatter = tableformat.create_formatter(fmt)
+    print_report(report, formatter)
     
 def main(argv):
-    if len(argv) != 3:
+    if len(argv) < 3 and len(argv) > 5:
         raise SystemExit(f'Usage: {argv[0]} portfile pricefile')
-    portfolio_report(argv[1], argv[2])
+    if len(argv) == 3:
+        portfolio_report(argv[1], argv[2])
+    else:
+        portfolio_report(argv[1], argv[2], argv[3])
 
 if __name__ == '__main__':    
     import sys
