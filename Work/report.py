@@ -4,13 +4,14 @@
 from fileparse import parse_csv
 import stock
 import tableformat
+from portfolio import Portfolio
 
 def read_portfolio(filename) -> list:
     with open(filename) as lines:
         portfolio_dicts = parse_csv(lines, col_select=['name','shares','price'], types=[str,int,float], silence_errors=False)
     
     portfolio = [stock.Stock(item['name'], item['shares'], item['price']) for item in portfolio_dicts]
-    return portfolio
+    return Portfolio(portfolio)
 
 def read_prices(filename) -> dict:
     with open(filename) as lines:
